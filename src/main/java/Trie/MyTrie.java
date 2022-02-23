@@ -4,10 +4,10 @@ import java.util.*;
 
 public class MyTrie {
 
-    private final RootNode root;
+    private final Node root;
 
     public MyTrie() {
-        root = new RootNode(0, false);
+        root = new Node(null, false);
     }
 
     public void add(String line) {
@@ -20,41 +20,19 @@ public class MyTrie {
         tmp.setLastNode(true);
     }
 
-    public void rm(String line) throws Exception {
-        this.myFind(line, true).selfRm();
+    public boolean rm(String line) {
+        return this.root.rm(line.toCharArray(), 0) != Ans.Fail;
     }
 
     public boolean find(String line) {
-        try {
-            return this.myFind(line, true).getLastNode();
-        } catch (Exception e) {
-            return line.isEmpty();
-        }
+        Node res = this.root.find(line.toCharArray(), 0);
+        return res != null && res.getLastNode();
     }
 
     public ArrayList<String> findAll(String prefix) {
-        try {
-            ArrayList<String> out = this.myFind(prefix, false).dfs(prefix);
-            Collections.sort(out);
-            return out;
-        } catch (Exception e) {
-            if (prefix.isEmpty()) {
-                ArrayList<String> out = this.root.dfs("");
-                Collections.sort(out);
-                return out;
-            } else
-                return new ArrayList<>();
-        }
-    }
-
-    private Node myFind(String line, boolean checkLastNode) throws Exception {
-        if (line.isEmpty()) throw new Exception("Element not found");
-        char[] arr = line.toCharArray();
-        Node tmp = root.getNextStep(arr[0]);
-        for (int i = 1; i < line.length(); i++) {
-            tmp = tmp.getNextStep(arr[i]);
-        }
-        if (checkLastNode && !tmp.getLastNode()) throw new Exception("Not last node");
-        return tmp;
+        Node res = this.root.find(prefix.toCharArray(), 0);
+        ArrayList<String> out = new ArrayList<>();
+        if (res != null) out = res.dfs(new StringBuilder(prefix));
+        return out;
     }
 }
