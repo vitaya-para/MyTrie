@@ -1,41 +1,30 @@
 package Trie;
 
 import net.moznion.random.string.RandomStringGenerator;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class TestFindAll {
     private MyTrie myTrie = null;
     private String line = null;
-    private ArrayList<String> ls = null;
-    private ArrayList<String> out = null;
+    private Set<String> ls = null;
     private final RandomStringGenerator generator = new RandomStringGenerator();
 
     @Before
     public void before() {
         myTrie = new MyTrie();
-        ls = new ArrayList<>();
-        out = new ArrayList<>();
+        ls = new HashSet<>();
         generator.setNumOfUpperLimit(50);
         line = generator.generateByRegex("\\w\\w+");
-    }
-
-    @After
-    public void after() {
-        Collections.sort(ls);
-        Collections.sort(out);
-        Assertions.assertEquals(ls, out);
     }
 
     @Test
     //проверка на пустой set при отсутствии строк с таким префиксом
     public void emptySet() {
-        out = myTrie.findAll(line);
+        Assertions.assertEquals(ls, new HashSet<>(myTrie.findAll(line)));
     }
 
     @Test
@@ -46,7 +35,7 @@ public class TestFindAll {
             myTrie.add(line);
             ls.add(line);
         }
-        out = myTrie.findAll("");
+        Assertions.assertEquals(ls, new HashSet<>(myTrie.findAll("")));
     }
 
     @Test
@@ -54,31 +43,36 @@ public class TestFindAll {
     public void findSingle() {
         myTrie.add(line);
         ls.add(line);
-        out = myTrie.findAll(line);
+        Assertions.assertEquals(ls, new HashSet<>(myTrie.findAll(line)));
     }
 
-    @Test
-    //поиск элементов с одинаковым префиксом
-    public void findSamePrefix() {
+    private String AddSamePrefix() {
         String prefix = generator.generateByRegex("\\w\\w+");
         myTrie.add(line);
         myTrie.add(line + prefix);
         ls.add(line);
         ls.add(line + prefix);
-        out = myTrie.findAll(line);
+        return line;
+    }
+
+    @Test
+    //поиск элементов с одинаковым префиксом
+    public void findSamePrefix() {
+        this.AddSamePrefix();
+        Assertions.assertEquals(ls, new HashSet<>(myTrie.findAll(line)));
     }
 
     @Test
     //поиск после удаления одного элемента
     public void findAfterRm() {
-        this.findSamePrefix();
-        myTrie.rm(ls.get(0));
-        ls.remove(0);
-        out = myTrie.findAll(line);
+        String line = this.AddSamePrefix();
+        myTrie.rm(line);
+        ls.remove(line);
+        Assertions.assertEquals(ls, new HashSet<>(myTrie.findAll(line)));
     }
 
     @Test
-    public void hardTets() {
+    public void hardTest() {
         myTrie = new MyTrie();
         ls.clear();
         myTrie.add("A0Tb8");
@@ -101,6 +95,6 @@ public class TestFindAll {
         ls.add("Wi2o");
         ls.add("b3I");
         ls.add("tp");
-        out = myTrie.findAll("");
+        Assertions.assertEquals(ls, new HashSet<>(myTrie.findAll("")));
     }
 }

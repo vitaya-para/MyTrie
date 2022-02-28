@@ -11,7 +11,8 @@ public class MyTrie {
     }
 
     public void add(String line) {
-        if (line.isEmpty()) return;
+        if (line.isEmpty())
+            return;
         char[] arr = line.toCharArray();
         Node tmp = root.setNextStep(arr[0]);
         for (int i = 1; i < line.length(); i++) {
@@ -26,13 +27,14 @@ public class MyTrie {
 
     public boolean find(String line) {
         Node res = this.root.find(line.toCharArray(), 0);
-        return res != null && res.getLastNode();
+        return res != null && res.isLastNode();
     }
 
-    public ArrayList<String> findAll(String prefix) {
+    public List<String> findAll(String prefix) {
         Node res = this.root.find(prefix.toCharArray(), 0);
-        ArrayList<String> out = new ArrayList<>();
-        if (res != null) out = res.dfs(new StringBuilder(prefix));
-        return out;
+        List<String> out = new ArrayList<>();
+        if (res != null)
+            out = res.dfs(new StringBuilder(prefix));
+        return out.stream().toList();
     }
 }
